@@ -31,6 +31,8 @@ def get_batch(
     labels = torch.empty((batch_size, context_length), dtype=torch.long, device=device)
     for i in range(batch_size):
         start = torch.randint(0, n - context_length, (1,)).item()
-        inputs[i] = torch.from_numpy(dataset[start : start + context_length])
-        labels[i] = torch.from_numpy(dataset[start + 1 : start + context_length + 1])
+        inp = torch.tensor(dataset[start : start + context_length], dtype=torch.long, device=device)
+        lab = torch.tensor(dataset[start + 1 : start + context_length + 1], dtype=torch.long, device=device)
+        inputs[i].copy_(inp)
+        labels[i].copy_(lab)
     return inputs, labels

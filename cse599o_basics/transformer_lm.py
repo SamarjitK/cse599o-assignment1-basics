@@ -8,7 +8,7 @@ from cse599o_basics.linear import Linear
 
 class TransformerLM(torch.nn.Module):
     token_embeddings: Embedding
-    layers: list[TransformerBlock]
+    layers: torch.nn.ModuleList
     ln_final: RMSNorm
     lm_head: Linear
 
@@ -41,7 +41,7 @@ class TransformerLM(torch.nn.Module):
         rope = RoPE(rope_theta, d_model // num_heads, context_length)
 
         self.token_embeddings = Embedding(vocab_size, d_model)
-        self.layers = list([TransformerBlock(d_model, num_heads, d_ff, rope) for _ in range(num_layers)])
+        self.layers = torch.nn.ModuleList([TransformerBlock(d_model, num_heads, d_ff, rope) for _ in range(num_layers)])
         self.ln_final = RMSNorm(d_model)
         self.lm_head = Linear(d_model, vocab_size)
 

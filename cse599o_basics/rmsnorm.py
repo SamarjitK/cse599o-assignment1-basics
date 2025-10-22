@@ -21,10 +21,7 @@ class RMSNorm(torch.nn.Module):
         self.eps = eps
         self.device = device
         self.dtype = dtype
-        self.g = torch.nn.Parameter(
-            torch.nn.init.trunc_normal_(
-                torch.empty((d_model,), device=device, dtype=dtype))
-        )
+        self.g = torch.nn.Parameter(torch.nn.init.trunc_normal_(torch.empty((d_model,))))
 
     def forward(self, x: torch.Tensor)-> torch.Tensor:
         """Process an input tensor of shape (batch_size, sequence_length, d_model)

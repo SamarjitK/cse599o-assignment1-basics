@@ -63,6 +63,8 @@ def scaled_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: Op
     sqrt_d_k = torch.sqrt(torch.tensor(q.shape[-1]))
     pre_softmax = einops.einsum(q, k, '... n d_k, ... m d_k -> ... n m') / sqrt_d_k
     if mask is not None:
+        if mask.device != pre_softmax.device:
+            mask = mask.to(pre_softmax.device)
         pre_softmax = pre_softmax.masked_fill(~mask, float('-inf'))
     post_softmax = softmax(pre_softmax, dim=-1)
     return einops.einsum(post_softmax, v, '... n m, ... m d_v -> ... n d_v')

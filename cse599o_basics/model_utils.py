@@ -46,9 +46,10 @@ def cross_entropy(inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
         Float(): The average cross-entropy loss across examples.
     """
     inputs = inputs - einops.reduce(inputs, '... vocab -> ... 1', 'max') # (batch_size, vocab_size)
-    targets = einops.rearrange(targets, '... b -> ... b 1') # (batch_size, 1)
+    # targets = einops.rearrange(targets, '... b -> ... b 1') # (batch_size, 1)
+    targets = targets.unsqueeze(-1) # (batch_size, 1)
     sliced = torch.gather(inputs, dim=-1, index=targets) # (batch_size,)
-    return (torch.logsumexp(inputs, dim=-1) - sliced).mean() # scalar
+    return (torch.logsumexp(inputs, dim=-1) - sliced.squeeze(-1)).mean() # scalar
 
 def softmax(in_features: torch.Tensor, dim: int) -> torch.Tensor:
     """
