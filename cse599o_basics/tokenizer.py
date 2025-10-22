@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, List, Optional, Iterator
+from typing import Dict, List, Optional, Iterator, Iterable
 import tiktoken
 
 class BPETokenizer:
