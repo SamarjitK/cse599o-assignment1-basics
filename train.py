@@ -66,7 +66,10 @@ def main():
     optim = AdamW(model.parameters(), **optim_args)
 
     print("Starting training loop...")
-    results = train(model, optim, train_dataset, valid_dataset, batch_size, context_length, num_steps, device)
+    results = train(model, optim, train_dataset, valid_dataset,
+                    batch_size, context_length, num_steps, device,
+                    lr_scheduler_params=[optim_args["lr"], 1e-5, int(0.03 * num_steps), num_steps],
+                    max_grad_norm=1.0)
     results.update({
             "model_args": model_args,
             "optim_args": optim_args,

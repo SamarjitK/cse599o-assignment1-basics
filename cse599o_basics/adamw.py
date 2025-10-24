@@ -14,8 +14,6 @@ class AdamW(torch.optim.Optimizer):
         Additional arguments depending on the optimizer
         (e.g., learning rate is common).
         """
-        # Make sure to call the base class constructor, passing params
-        # and a dictionary of hyperparameters (keys are string names).
         defaults = dict(lr=lr, weight_decay=weight_decay, betas=betas, eps=eps)
         super().__init__(params, defaults)
 

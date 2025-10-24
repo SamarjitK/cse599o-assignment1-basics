@@ -4,7 +4,7 @@ import os
 import timeit
 import numpy as np
 from typing import BinaryIO, IO
-from cse599o_basics.model_utils import cross_entropy, softmax
+from cse599o_basics.model_utils import cross_entropy, softmax, lr_scheduler, gradient_clipping
 from cse599o_basics.transformer_lm import TransformerLM
 from cse599o_basics.adamw import AdamW
 from cse599o_basics.tokenizer import BPETokenizer
@@ -75,7 +75,8 @@ def prep_datasets(train_txt: str, valid_txt: str, tokenizer: BPETokenizer):
 
 def train(model: TransformerLM, optim: AdamW, 
           train_dataset: np.memmap, valid_dataset: np.memmap,
-          batch_size, context_length, num_steps, device) -> dict:
+          batch_size, context_length, num_steps, device,
+          lr_scheduler_params: list = [], max_grad_norm: float | None = None) -> dict:
     timestamp = int(timeit.default_timer())
     ckpt_file = os.path.join("checkpoints", f"ckpt_{timestamp}.pt")
     train_losses = []
@@ -86,11 +87,23 @@ def train(model: TransformerLM, optim: AdamW,
     for step in range(1, num_steps + 1):
         start = timeit.default_timer()
         model.train()
+
+        # Learning rate scheduling
+        if lr_scheduler_params:
+            lr = lr_scheduler((step-1), *lr_scheduler_params)
+            for group in optim.param_groups:
+                group['lr'] = lr
+
         inputs, labels = get_batch(train_dataset, batch_size, context_length, device)
         optim.zero_grad()
         outputs = model(inputs)
         loss = cross_entropy(outputs, labels)
         loss.backward()
+
+        # Gradient clipping
+        if max_grad_norm is not None:
+            gradient_clipping(model.parameters(), max_grad_norm)
+        
         optim.step()
 
         train_losses.append(loss.item())
