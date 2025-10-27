@@ -11,7 +11,7 @@ class TransformerBlock(torch.nn.Module):
     ffn: SwiGLU
     ln2: RMSNorm
 
-    def __init__(self, d_model: int, num_heads: int, d_ff: int, rope: RoPE):
+    def __init__(self, d_model: int, num_heads: int, d_ff: int, rope: RoPE, profile: bool = False):
         """
         Initialize a Transformer block with multi-headed self-attention, RoPE (if provided),
         and a feedforward network.
@@ -26,7 +26,8 @@ class TransformerBlock(torch.nn.Module):
         self.num_heads = num_heads
         self.d_ff = d_ff
         self.rope = rope
-        self.attn = MultiHead(d_model, num_heads, rope)
+        self.profile = profile
+        self.attn = MultiHead(d_model, num_heads, rope, profile)
         self.ln1 = RMSNorm(d_model)
         self.ffn = SwiGLU(d_model, d_ff)
         self.ln2 = RMSNorm(d_model)

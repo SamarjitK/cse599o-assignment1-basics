@@ -63,25 +63,29 @@ def main():
         "betas": (0.9, 0.999),
         "eps": 1e-8
     }
-    model = TransformerLM(**model_args).to(device)
-    optim = AdamW(model.parameters(), **optim_args)
+    lrs = [1e-3, 2.5e-4]
 
-    print("Starting training loop...")
-    results = train(model, optim, train_dataset, valid_dataset,
-                    batch_size, context_length, num_steps, device,
-                    # lr_scheduler_params=[optim_args["lr"], 1e-4, int(0.25 * num_steps), num_steps],
-                    # max_grad_norm=1.0
-                    )
-    results.update({
-            "model_args": model_args,
-            "optim_args": optim_args,
-            "batch_size": batch_size,
-            "num_steps": num_steps,
-        })
-    report_file = os.path.join("reports", f"report_{results['timestamp']}.json")
-    with open(report_file, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=4)
-    print(f"Saved report to {report_file}")
+    for lr in lrs:
+        model = TransformerLM(**model_args).to(device)
+        optim_args["lr"] = lr
+        optim = AdamW(model.parameters(), **optim_args)
+
+        print("Starting training loop...")
+        results = train(model, optim, train_dataset, valid_dataset,
+                        batch_size, context_length, num_steps, device,
+                        # lr_scheduler_params=[optim_args["lr"], 1e-4, int(0.25 * num_steps), num_steps],
+                        # max_grad_norm=1.0
+                        )
+        results.update({
+                "model_args": model_args,
+                "optim_args": optim_args,
+                "batch_size": batch_size,
+                "num_steps": num_steps,
+            })
+        report_file = os.path.join("reports", f"report_{results['timestamp']}.json")
+        with open(report_file, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=4)
+        print(f"Saved report for lr={lr} to {report_file}")
 
 if __name__ == "__main__":
     main()

@@ -45,6 +45,9 @@ def cross_entropy(inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
     Returns:
         Float(): The average cross-entropy loss across examples.
     """
+    # need to collapse batches
+    inputs = einops.rearrange(inputs, '... v -> (... ) v') # (batch_size, vocab_size)
+    targets = einops.rearrange(targets, '... -> (...)') # (batch_size,)
     inputs = inputs - einops.reduce(inputs, '... vocab -> ... 1', 'max') # (batch_size, vocab_size)
     # targets = einops.rearrange(targets, '... b -> ... b 1') # (batch_size, 1)
     targets = targets.unsqueeze(-1) # (batch_size, 1)

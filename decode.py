@@ -14,7 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description="Report file to read")
     parser.add_argument("--report_file", type=str)
     parser.add_argument("--max_tokens", type=int, default=256)
-    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--temperature", type=float, default=0.8)
     parser.add_argument("--top_p", type=float, default=0.9)
     parser.add_argument("--prompt", type=str, default="Once upon a time")
 

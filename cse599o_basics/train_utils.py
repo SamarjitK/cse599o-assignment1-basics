@@ -83,7 +83,7 @@ def train(model: TransformerLM, optim: AdamW,
     val_losses = []
     step_times = []
     val_interval = num_steps // 20 if num_steps >= 20 else 2
-    # inputs, labels = get_batch(train_dataset, batch_size, context_length, device) to overfit
+    # inputs, labels = get_batch(train_dataset, batch_size, context_length, device) # to overfit
     for step in range(1, num_steps + 1):
         start = timeit.default_timer()
         model.train()
@@ -101,7 +101,7 @@ def train(model: TransformerLM, optim: AdamW,
         loss.backward()
 
         # Gradient clipping
-        if max_grad_norm is not None:
+        if max_grad_norm is not None and step > float(0.5 * num_steps):
             gradient_clipping(model.parameters(), max_grad_norm)
         
         optim.step()
@@ -120,6 +120,7 @@ def train(model: TransformerLM, optim: AdamW,
                 val_losses.append(val_loss.item())
                 print(f"Step {step}, Validation Loss: {val_loss.item():.4f}")
             save_checkpoint(model, optim, step, ckpt_file)
+    # save_checkpoint(model, optim, num_steps, ckpt_file)
     return {"train_losses": train_losses, "val_losses": val_losses, "val_interval": val_interval,
             "ckpt_file": ckpt_file, "timestamp": timestamp}
 

@@ -170,3 +170,7 @@ data/
 checkpoints/
 reports/
 slurm/
+
+# ignore .nsys-rep, .pickle
+*.nsys-rep
+*.pickle

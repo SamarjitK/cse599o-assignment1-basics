@@ -16,4 +16,4 @@
 
 # --- Example Command to run ---
 
-srun uv run train.py --num_steps 5000
+srun uv run train.py
